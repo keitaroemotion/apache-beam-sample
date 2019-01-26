@@ -1,23 +1,12 @@
 package org.apache.beam.examples;
 
-/*
- *
- * XXX Need to remove imports not used later
- *
- */
-  
-import org.apache.beam.examples.common.ExampleUtils;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.metrics.Counter;
-import org.apache.beam.sdk.metrics.Distribution;
-import org.apache.beam.sdk.metrics.Metrics;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.options.Validation.Required;
-import org.apache.beam.sdk.transforms.Count;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.PTransform;
@@ -42,30 +31,41 @@ public class JsonToCsv {
       JSONObject obj = new JSONObject(element);
 
       Set<String> fields        = obj.keySet();
-      Map<String, Object> map   = obj.toMap();
-      Collection<Object> values = map.values(); 
+      Collection<Object> values = obj.toMap().values(); 
 
-      String f = "";
-      for (Object field : fields) {
-        f += field.toString() + ",";
-      }
-
-      String v = "";
-      for (Object value : values) {
-        v += value.toString() + ",";
-      }
-
-      String line = f + v;
-
-      receiver.output(line);
+      receiver.output(buildCsvLine(fields, values));
     }
   }
 
-  public static class FormatAsTextFn extends SimpleFunction<KV<String, String>, String> {
-    @Override
-    public String apply(KV<String, String> input) {
-      return input.getKey() + ": " + input.getValue();
+  private static String buildCsvLine(Set<String> fields, Collection<Object> values){
+    String fieldString = "";
+    String valueString = "";
+
+    for (Object field : fields) {
+      fieldString += field.toString() + ",";
     }
+
+    for (Object field : fields) {
+      valueString += field.toString() + ",";
+    }
+
+    return fieldString + valueString;
+  }
+
+  private static String assemble(Set<String> fields){
+    String partialCsv = "";
+    for (Object field : fields) {
+      partialCsv += field.toString() + ",";
+    }
+    return partialCsv;
+  }
+
+  private static String assemble(Collection<Object> fields){
+    String partialCsv = "";
+    for (Object field : fields) {
+      partialCsv += field.toString() + ",";
+    }
+    return partialCsv;
   }
 
   public static class LineParser
