@@ -1,0 +1,15 @@
+cd word-count-beam/
+rm -rf counts
+rm -rf counts-*
+mkdir -p counts
+
+INPUT=$1
+if [ -z "$INPUT" ]
+then
+   INPUT="pom.xml"
+fi
+
+mvn compile exec:java -Dexec.mainClass=org.apache.beam.examples.JsonToCsv \
+     -Dexec.args="--inputFile=$INPUT --output=counts/counts" -Pdirect-runner
+
+cat counts/*
