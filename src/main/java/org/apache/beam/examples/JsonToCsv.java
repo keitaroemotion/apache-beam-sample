@@ -45,9 +45,19 @@ public class JsonToCsv {
       Map<String, Object> map   = obj.toMap();
       Collection<Object> values = map.values(); 
 
-      for (Object value : values) {
-        receiver.output(value.toString());
+      String f = "";
+      for (Object field : fields) {
+        f += field.toString() + ",";
       }
+
+      String v = "";
+      for (Object value : values) {
+        v += value.toString() + ",";
+      }
+
+      String line = f + v;
+
+      receiver.output(line);
     }
   }
 
@@ -59,77 +69,12 @@ public class JsonToCsv {
   }
 
   public static class LineParser
-      extends PTransform<PCollection<String>, PCollection<KV<String, String>>> {
+      extends PTransform<PCollection<String>, PCollection<String>> {
     @Override
-    public PCollection<KV<String, String>> expand(PCollection<String> jsonLines) {
+    public PCollection<String> expand(PCollection<String> jsonLines) {
       PCollection<String> values = jsonLines.apply(ParDo.of(new ParseJsonString()));
-      PCollection<KV<String, String>> wordCounts = values.apply(perElement());
-
-      return wordCounts;
+      return values;
     }
-  }
-
-  public static <T> PTransform<PCollection<T>, PCollection<KV<T, String>>> perElement() {
-    return new PerElement<>();
-  }
-
-  private static class PerElement<T> extends PTransform<PCollection<T>, PCollection<KV<T, String>>> {
-
-    private PerElement() {}
-
-    @Override
-    public PCollection<KV<T, String>> expand(PCollection<T> input) {
-      return input
-          .apply(
-              "Init",
-              MapElements.via(
-                  new SimpleFunction<T, KV<T, Void>>() {
-                    @Override
-                    public KV<T, Void> apply(T element) {
-                      return KV.of(element, (Void) null);
-                    }
-                  }))
-          .apply(perKey());
-    }
-  }
- 
-
-  private static class CountFn<T> extends CombineFn<T, String[], String> {
-    @Override
-    public String[] createAccumulator() {
-      return new String[] {""};
-    }
-
-    @Override
-    public String[] addInput(String[] accumulator, T input) {
-      if(input != null){
-        accumulator[0] += input;
-      }
-      return accumulator;
-    }
-
-    @Override
-    public String extractOutput(String[] accumulator) {
-      return accumulator[0];
-    }
-
-    @Override
-    public String[] mergeAccumulators(Iterable<String[]> accumulators) {
-      Iterator<String[]> iter = accumulators.iterator();
-      if (!iter.hasNext()) {
-        return createAccumulator();
-      }
-      String[] running = iter.next();
-
-      while (iter.hasNext()) {
-        running[0] += iter.next()[0];
-      }
-      return running;
-    }
-  }
-
-  public static <K, V> PTransform<PCollection<KV<K, V>>, PCollection<KV<K, String>>> perKey() {
-    return Combine.perKey(new CountFn<V>());
   }
 
   public interface JsonToCsvOptions extends PipelineOptions {
@@ -151,7 +96,6 @@ public class JsonToCsv {
 
     p.apply("ReadLines", TextIO.read().from(options.getInputFile()))
      .apply(new LineParser())
-     .apply(MapElements.via(new FormatAsTextFn()))
      .apply("WriteCSV", TextIO.write().to(options.getOutput()));
 
     p.run().waitUntilFinish();
