@@ -11,4 +11,4 @@ fi
 mvn compile exec:java -Dexec.mainClass=org.apache.beam.examples.JsonToCsv \
      -Dexec.args="--inputFile=$INPUT --output=$OUTPUT/json" -Pdirect-runner
 
-# cat $OUTPUT/*
+cat $OUTPUT/*
