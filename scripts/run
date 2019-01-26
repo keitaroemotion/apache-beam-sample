@@ -1,4 +1,3 @@
-cd word-count-beam/
 rm -rf counts
 rm -rf counts-*
 mkdir -p counts
