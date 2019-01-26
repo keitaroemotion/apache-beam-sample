@@ -28,48 +28,15 @@ public class JsonToCsv {
 
     @ProcessElement
     public void processElement(@Element String element, OutputReceiver<String> receiver) {
-      JSONObject obj = new JSONObject(element);
-
-      Set<String> fields        = obj.keySet();
-      Collection<Object> values = obj.toMap().values(); 
+      JSONObject json           = new JSONObject(element);
+      Set<String> fields        = json.keySet();
+      Collection<Object> values = json.toMap().values(); 
 
       receiver.output(buildCsvLine(fields, values));
     }
   }
 
-  private static String buildCsvLine(Set<String> fields, Collection<Object> values){
-    String fieldString = "";
-    String valueString = "";
-
-    for (Object field : fields) {
-      fieldString += field.toString() + ",";
-    }
-
-    for (Object field : fields) {
-      valueString += field.toString() + ",";
-    }
-
-    return fieldString + valueString;
-  }
-
-  private static String assemble(Set<String> fields){
-    String partialCsv = "";
-    for (Object field : fields) {
-      partialCsv += field.toString() + ",";
-    }
-    return partialCsv;
-  }
-
-  private static String assemble(Collection<Object> fields){
-    String partialCsv = "";
-    for (Object field : fields) {
-      partialCsv += field.toString() + ",";
-    }
-    return partialCsv;
-  }
-
-  public static class LineParser
-      extends PTransform<PCollection<String>, PCollection<String>> {
+  public static class LineParser extends PTransform<PCollection<String>, PCollection<String>> {
     @Override
     public PCollection<String> expand(PCollection<String> jsonLines) {
       PCollection<String> values = jsonLines.apply(ParDo.of(new ParseJsonString()));
@@ -106,5 +73,20 @@ public class JsonToCsv {
         PipelineOptionsFactory.fromArgs(args).withValidation().as(JsonToCsvOptions.class);
 
     runJsonToCsv(options);
+  }
+
+  private static String buildCsvLine(Set<String> fields, Collection<Object> values){
+    String fieldString = "";
+    String valueString = "";
+
+    for (Object field : fields) {
+      fieldString += field.toString() + ",";
+    }
+
+    for (Object field : fields) {
+      valueString += field.toString() + ",";
+    }
+
+    return fieldString + valueString;
   }
 }
