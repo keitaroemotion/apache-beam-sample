@@ -63,10 +63,10 @@ org/apache/beam/examples/complete/game/injector/RetryHttpInitializerWrapper.clas
 org/apache/beam/examples/complete/game/GameStats.class
 org/apache/beam/examples/complete/game/GameStats$1.class
 org/apache/beam/examples/subprocess/utils/CallingSubProcessUtils$Permit.class
-org/apache/beam/examples/JsonToCsv$Table.class
 org/apache/beam/examples/complete/game/StatefulTeamScore$UpdateTeamScoreFn.class
 org/apache/beam/examples/complete/game/LeaderBoard$CalculateUserScores.class
 org/apache/beam/examples/common/ExampleBigQueryTableOptions$BigQueryTableFactory.class
+org/apache/beam/examples/JsonToCsv$Field.class
 org/apache/beam/examples/DebuggingWordCount$FilterTextFn.class
 org/apache/beam/examples/complete/game/StatefulTeamScore.class
 org/apache/beam/examples/subprocess/configuration/SubProcessConfiguration.class

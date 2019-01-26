@@ -88,11 +88,12 @@ public class JsonToCsv {
     for (Object value : values) {
       String _value = value.toString();
 
-      if (fields[i].type == Field.VARCHAR){
+      if (fields[i].type == Field.VARCHAR || fields[i].type == Field.DATETIME){
         _value = String.format("'%s'", _value);
       }
 
       valueString += _value + ",";
+      i++;
     }
 
     return fieldString + valueString;
@@ -116,22 +117,22 @@ public class JsonToCsv {
     return new Field[]{
              new Field("PAYMENT_TYPE",             Field.VARCHAR),     
              new Field("STORE_AND_FWD_FLAG",       Field.VARCHAR),     
-             new Field("FARE_AMOUNT",              Field.VARCHAR),
-             new Field("PICKUP_LATITUDE",          Field.VARCHAR),
-             new Field("DROPOFF_DATETIME",         Field.VARCHAR),
-             new Field("PICKUP_DATETIME",          Field.VARCHAR),
-             new Field("PICKUP_LONGITUDE",         Field.VARCHAR),
-             new Field("TIP_AMOUNT",               Field.VARCHAR),
+             new Field("FARE_AMOUNT",              Field.NUMBER),
+             new Field("PICKUP_LATITUDE",          Field.NUMBER),
+             new Field("DROPOFF_DATETIME",         Field.DATETIME),
+             new Field("PICKUP_DATETIME",          Field.DATETIME),
+             new Field("PICKUP_LONGITUDE",         Field.NUMBER),
+             new Field("TIP_AMOUNT",               Field.NUMBER),
              new Field("UUID",                     Field.VARCHAR),
              new Field("TRIP_TYPE",                Field.VARCHAR),
              new Field("RATE_CODE",                Field.VARCHAR),
-             new Field("TOLLS_AMOUNT",             Field.VARCHAR),
-             new Field("DROPOFF_LATITUDE",         Field.VARCHAR),
-             new Field("DROPOFF_LONGITUDE",        Field.VARCHAR),
+             new Field("TOLLS_AMOUNT",             Field.NUMBER),
+             new Field("DROPOFF_LATITUDE",         Field.NUMBER),
+             new Field("DROPOFF_LONGITUDE",        Field.NUMBER),
              new Field("TIME_BETWEEN_SERVICE",     Field.VARCHAR),
-             new Field("PASSENGER_COUNT",          Field.VARCHAR),
-             new Field("DISTANCE_BETWEEN_SERVICE", Field.VARCHAR),
-             new Field("TOTAL_AMOUNT",             Field.VARCHAR),
+             new Field("PASSENGER_COUNT",          Field.NUMBER),
+             new Field("DISTANCE_BETWEEN_SERVICE", Field.NUMBER),
+             new Field("TOTAL_AMOUNT",             Field.NUMBER),
       };
   }
 }
