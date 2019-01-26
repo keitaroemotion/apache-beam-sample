@@ -30,12 +30,15 @@ import org.json.*;
 import java.util.Set;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Iterator;
+import org.apache.beam.sdk.transforms.Combine.CombineFn;
+import org.apache.beam.sdk.transforms.Combine;
 
 public class JsonToCsv {
-  static class ExtractWordsFn extends DoFn<String, String> {
-    private final Counter emptyLines       = Metrics.counter(ExtractWordsFn.class, "emptyLines");
+  static class ParseJsonString extends DoFn<String, String> {
+    private final Counter emptyLines       = Metrics.counter(ParseJsonString.class, "emptyLines");
     private final Distribution lineLenDist = Metrics.distribution(
-                                               ExtractWordsFn.class,
+                                               ParseJsonString.class,
                                                "lineLenDistro"
                                              );
 
@@ -53,23 +56,73 @@ public class JsonToCsv {
     }
   }
 
-  public static class FormatAsTextFn extends SimpleFunction<KV<String, Long>, String> {
+  public static class FormatAsTextFn extends SimpleFunction<KV<String, String>, String> {
     @Override
-    public String apply(KV<String, Long> input) {
+    public String apply(KV<String, String> input) {
       return input.getKey() + ": " + input.getValue();
     }
   }
 
-  public static class CountWords
-      extends PTransform<PCollection<String>, PCollection<KV<String, Long>>> {
+  public static class LineParser
+      extends PTransform<PCollection<String>, PCollection<KV<String, String>>> {
     @Override
-    public PCollection<KV<String, Long>> expand(PCollection<String> lines) {
-
-      PCollection<String> words                = lines.apply(ParDo.of(new ExtractWordsFn()));
-      PCollection<KV<String, Long>> wordCounts = words.apply(Count.perElement());
+    public PCollection<KV<String, String>> expand(PCollection<String> jsonLines) {
+      PCollection<String> values                 = jsonLines.apply(ParDo.of(new ParseJsonString()));
+      PCollection<KV<String, String>> wordCounts = values.apply(perElement());
 
       return wordCounts;
     }
+  }
+
+  public static <T> PTransform<PCollection<T>, PCollection<KV<T, String>>> perElement() {
+    return new PerElement<>();
+  }
+
+  private static class PerElement<T> extends PTransform<PCollection<T>, PCollection<KV<T, String>>> {
+
+    private PerElement() {}
+
+    @Override
+    public PCollection<KV<T, String>> expand(PCollection<T> input) {
+      return input
+          .apply(
+              "Init",
+              MapElements.via(
+                  new SimpleFunction<T, KV<T, Void>>() {
+                    @Override
+                    public KV<T, Void> apply(T element) {
+                      return KV.of(element, (Void) null);
+                    }
+                  }))
+          .apply(perKey());
+    }
+  }
+
+  private static class CountFn<T> extends CombineFn<T, String[], String> {
+    @Override
+    public String[] createAccumulator() {
+      return new String[] {""};
+    }
+
+    @Override
+    public String[] addInput(String[] accumulator, T input) {
+      // accumulator[0] += "";
+      // return accumulator;
+      return new String[] {""};
+    }
+
+    @Override
+    public String extractOutput(String[] accumulator) {
+      return "accumulator[0]";
+    }
+    @Override
+    public String[] mergeAccumulators(Iterable<String[]> accumulators) {
+      return new String[]{""};
+    }
+  }
+
+  public static <K, V> PTransform<PCollection<KV<K, V>>, PCollection<KV<K, String>>> perKey() {
+    return Combine.perKey(new CountFn<V>());
   }
 
   public interface JsonToCsvOptions extends PipelineOptions {
@@ -90,9 +143,9 @@ public class JsonToCsv {
     Pipeline p = Pipeline.create(options);
 
     p.apply("ReadLines", TextIO.read().from(options.getInputFile()))
-     .apply(new CountWords())
+     .apply(new LineParser())
      .apply(MapElements.via(new FormatAsTextFn()))
-     .apply("WriteCounts", TextIO.write().to(options.getOutput()));
+     .apply("WriteCSV", TextIO.write().to(options.getOutput()));
 
     p.run().waitUntilFinish();
   }

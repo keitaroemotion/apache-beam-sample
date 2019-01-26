@@ -6,10 +6,13 @@ org/apache/beam/examples/common/ExamplePubsubTopicAndSubscriptionOptions$PubsubS
 org/apache/beam/examples/complete/game/injector/Injector$1.class
 org/apache/beam/examples/complete/game/UserScore$Options.class
 org/apache/beam/examples/WindowedWordCount$Options.class
+org/apache/beam/examples/JsonToCsv$PerElement.class
+org/apache/beam/examples/JsonToCsv$CountFn.class
 org/apache/beam/examples/complete/game/utils/WriteToBigQuery$BuildRowFn.class
 org/apache/beam/examples/complete/game/utils/WriteWindowedToBigQuery.class
 org/apache/beam/examples/subprocess/ExampleEchoPipeline.class
 org/apache/beam/examples/WordCount$ExtractWordsFn.class
+org/apache/beam/examples/JsonToCsv$LineParser.class
 org/apache/beam/examples/common/ExamplePubsubTopicAndSubscriptionOptions.class
 org/apache/beam/examples/complete/game/injector/Injector.class
 org/apache/beam/examples/subprocess/kernel/SubProcessKernel.class
@@ -17,15 +20,14 @@ org/apache/beam/examples/common/WriteOneFilePerWindow$PerWindowFiles.class
 org/apache/beam/examples/complete/game/utils/WriteToText$WriteOneFilePerWindow.class
 org/apache/beam/examples/WordCount.class
 org/apache/beam/examples/subprocess/ExampleEchoPipeline$EchoInputDoFn.class
-org/apache/beam/examples/JsonToCsv$ExtractWordsFn.class
 org/apache/beam/examples/common/ExampleBigQueryTableOptions.class
 org/apache/beam/examples/DebuggingWordCount$WordCountOptions.class
 org/apache/beam/examples/complete/game/injector/Injector$TeamInfo.class
 org/apache/beam/examples/complete/game/UserScore$ExtractAndSumScore.class
-org/apache/beam/examples/JsonToCsv$CountWords.class
 org/apache/beam/examples/subprocess/kernel/SubProcessCommandLineArgs$Command.class
 org/apache/beam/examples/complete/game/LeaderBoard.class
 org/apache/beam/examples/complete/game/injector/InjectorUtils.class
+org/apache/beam/examples/JsonToCsv$ParseJsonString.class
 org/apache/beam/examples/subprocess/utils/CallingSubProcessUtils.class
 org/apache/beam/examples/WindowedWordCount$DefaultToCurrentSystemTime.class
 org/apache/beam/examples/complete/game/UserScore.class
@@ -45,6 +47,7 @@ org/apache/beam/examples/JsonToCsv$JsonToCsvOptions.class
 org/apache/beam/examples/complete/game/HourlyTeamScore.class
 org/apache/beam/examples/subprocess/utils/ExecutableFile.class
 org/apache/beam/examples/common/ExamplePubsubTopicOptions$PubsubTopicFactory.class
+org/apache/beam/examples/JsonToCsv$1.class
 org/apache/beam/examples/WordCount$FormatAsTextFn.class
 org/apache/beam/examples/MinimalWordCount.class
 org/apache/beam/examples/WindowedWordCount$DefaultToMinTimestampPlusOneHour.class
@@ -66,6 +69,7 @@ org/apache/beam/examples/subprocess/utils/CallingSubProcessUtils$Permit.class
 org/apache/beam/examples/complete/game/StatefulTeamScore$UpdateTeamScoreFn.class
 org/apache/beam/examples/complete/game/LeaderBoard$CalculateUserScores.class
 org/apache/beam/examples/common/ExampleBigQueryTableOptions$BigQueryTableFactory.class
+org/apache/beam/examples/JsonToCsv$PerElement$1.class
 org/apache/beam/examples/DebuggingWordCount$FilterTextFn.class
 org/apache/beam/examples/complete/game/StatefulTeamScore.class
 org/apache/beam/examples/subprocess/configuration/SubProcessConfiguration.class
