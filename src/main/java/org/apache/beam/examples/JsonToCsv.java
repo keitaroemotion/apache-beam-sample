@@ -26,6 +26,11 @@ import org.apache.beam.sdk.transforms.SimpleFunction;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 
+import org.json.*;
+import java.util.Set;
+import java.util.Map;
+import java.util.Collection;
+
 public class JsonToCsv {
   static class ExtractWordsFn extends DoFn<String, String> {
     private final Counter emptyLines       = Metrics.counter(ExtractWordsFn.class, "emptyLines");
@@ -36,18 +41,14 @@ public class JsonToCsv {
 
     @ProcessElement
     public void processElement(@Element String element, OutputReceiver<String> receiver) {
-      lineLenDist.update(element.length());
+      JSONObject obj = new JSONObject(element);
 
-      if (element.trim().isEmpty()) {
-        emptyLines.inc();
-      }
+      Set<String> fields        = obj.keySet();
+      Map<String, Object> map   = obj.toMap();
+      Collection<Object> values = map.values(); 
 
-      String[] words = element.split(ExampleUtils.TOKENIZER_PATTERN, -1);
-
-      for (String word : words) {
-        if (!word.isEmpty()) {
-          receiver.output(word);
-        }
+      for (Object value : values) {
+        receiver.output(value.toString());
       }
     }
   }
@@ -92,6 +93,7 @@ public class JsonToCsv {
      .apply(new CountWords())
      .apply(MapElements.via(new FormatAsTextFn()))
      .apply("WriteCounts", TextIO.write().to(options.getOutput()));
+
     p.run().waitUntilFinish();
   }
 
