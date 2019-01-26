@@ -5,7 +5,7 @@ mkdir -p counts
 INPUT=$1
 if [ -z "$INPUT" ]
 then
-   INPUT="pom.xml"
+   INPUT="src/test/json/tiny.json"
 fi
 
 mvn compile exec:java -Dexec.mainClass=org.apache.beam.examples.JsonToCsv \
