@@ -9,7 +9,6 @@ org/apache/beam/examples/WindowedWordCount$Options.class
 org/apache/beam/examples/complete/game/utils/WriteToBigQuery$BuildRowFn.class
 org/apache/beam/examples/complete/game/utils/WriteWindowedToBigQuery.class
 org/apache/beam/examples/subprocess/ExampleEchoPipeline.class
-org/apache/beam/examples/JsonToCsv$WordCountOptions.class
 org/apache/beam/examples/WordCount$ExtractWordsFn.class
 org/apache/beam/examples/common/ExamplePubsubTopicAndSubscriptionOptions.class
 org/apache/beam/examples/complete/game/injector/Injector.class
@@ -42,6 +41,7 @@ org/apache/beam/examples/common/ExamplePubsubTopicOptions.class
 org/apache/beam/examples/JsonToCsv$FormatAsTextFn.class
 org/apache/beam/examples/complete/game/GameStats$CalculateSpammyUsers.class
 org/apache/beam/examples/complete/game/HourlyTeamScore$Options.class
+org/apache/beam/examples/JsonToCsv$JsonToCsvOptions.class
 org/apache/beam/examples/complete/game/HourlyTeamScore.class
 org/apache/beam/examples/subprocess/utils/ExecutableFile.class
 org/apache/beam/examples/common/ExamplePubsubTopicOptions$PubsubTopicFactory.class

@@ -71,22 +71,21 @@ public class JsonToCsv {
     }
   }
 
-  public interface WordCountOptions extends PipelineOptions {
-
+  public interface JsonToCsvOptions extends PipelineOptions {
     @Description("Path of the file to read from")
-    @Default.String("gs://apache-beam-samples/shakespeare/kinglear.txt")
-    String getInputFile();
 
-    void setInputFile(String value);
+    String getInputFile();
+    void   setInputFile(String value);
 
     @Description("Path of the file to write to")
+
     @Required
     String getOutput();
 
     void setOutput(String value);
   }
 
-  static void runWordCount(WordCountOptions options) {
+  static void runJsonToCsv(JsonToCsvOptions options) {
     Pipeline p = Pipeline.create(options);
 
     p.apply("ReadLines", TextIO.read().from(options.getInputFile()))
@@ -97,9 +96,9 @@ public class JsonToCsv {
   }
 
   public static void main(String[] args) {
-    WordCountOptions options =
-        PipelineOptionsFactory.fromArgs(args).withValidation().as(WordCountOptions.class);
+    JsonToCsvOptions options =
+        PipelineOptionsFactory.fromArgs(args).withValidation().as(JsonToCsvOptions.class);
 
-    runWordCount(options);
+    runJsonToCsv(options);
   }
 }
