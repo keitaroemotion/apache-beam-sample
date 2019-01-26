@@ -44,6 +44,7 @@ org/apache/beam/examples/JsonToCsv$JsonToCsvOptions.class
 org/apache/beam/examples/complete/game/HourlyTeamScore.class
 org/apache/beam/examples/subprocess/utils/ExecutableFile.class
 org/apache/beam/examples/common/ExamplePubsubTopicOptions$PubsubTopicFactory.class
+org/apache/beam/examples/JsonToCsv$1.class
 org/apache/beam/examples/WordCount$FormatAsTextFn.class
 org/apache/beam/examples/MinimalWordCount.class
 org/apache/beam/examples/WindowedWordCount$DefaultToMinTimestampPlusOneHour.class
@@ -62,6 +63,7 @@ org/apache/beam/examples/complete/game/injector/RetryHttpInitializerWrapper.clas
 org/apache/beam/examples/complete/game/GameStats.class
 org/apache/beam/examples/complete/game/GameStats$1.class
 org/apache/beam/examples/subprocess/utils/CallingSubProcessUtils$Permit.class
+org/apache/beam/examples/JsonToCsv$Table.class
 org/apache/beam/examples/complete/game/StatefulTeamScore$UpdateTeamScoreFn.class
 org/apache/beam/examples/complete/game/LeaderBoard$CalculateUserScores.class
 org/apache/beam/examples/common/ExampleBigQueryTableOptions$BigQueryTableFactory.class

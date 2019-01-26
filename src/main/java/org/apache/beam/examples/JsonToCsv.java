@@ -16,7 +16,9 @@ import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 
 import org.json.*;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,7 +31,7 @@ public class JsonToCsv {
     @ProcessElement
     public void processElement(@Element String element, OutputReceiver<String> receiver) {
       JSONObject json           = new JSONObject(element);
-      Set<String> fields        = json.keySet();
+      Set<Table> fields         = getTableFields();
       Collection<Object> values = json.toMap().values(); 
 
       receiver.output(buildCsvLine(fields, values));
@@ -39,8 +41,7 @@ public class JsonToCsv {
   public static class LineParser extends PTransform<PCollection<String>, PCollection<String>> {
     @Override
     public PCollection<String> expand(PCollection<String> jsonLines) {
-      PCollection<String> values = jsonLines.apply(ParDo.of(new ParseJsonString()));
-      return values;
+      return jsonLines.apply(ParDo.of(new ParseJsonString()));
     }
   }
 
@@ -75,18 +76,58 @@ public class JsonToCsv {
     runJsonToCsv(options);
   }
 
-  private static String buildCsvLine(Set<String> fields, Collection<Object> values){
+  private static String buildCsvLine(Set<Table> fields, Collection<Object> values){
     String fieldString = "";
     String valueString = "";
 
-    for (Object field : fields) {
-      fieldString += field.toString() + ",";
+    for (Table field : fields) {
+      fieldString += field.fieldName + ",";
     }
 
-    for (Object field : fields) {
-      valueString += field.toString() + ",";
+    for (Object value : values) {
+      valueString += value.toString() + ",";
     }
 
     return fieldString + valueString;
+  }
+
+  private static class Table{
+    public static final int VARCHAR  = 0;
+    public static final int DATETIME = 1;
+    public static final int NUMBER   = 2;
+
+    public String  fieldName;
+    public int type;
+
+    private Table(String _fieldName, int _type){
+      fieldName = _fieldName;
+      type      = _type;
+    }
+  }
+
+  private static Set<Table> getTableFields(){
+    Table[] arrayFields = new Table[]{
+                                 new Table("PAYMENT_TYPE",             Table.VARCHAR),     
+                                 new Table("STORE_AND_FWD_FLAG",       Table.VARCHAR),     
+                                 new Table("FARE_AMOUNT",              Table.VARCHAR),
+                                 new Table("PICKUP_LATITUDE",          Table.VARCHAR),
+                                 new Table("DROPOFF_DATETIME",         Table.VARCHAR),
+                                 new Table("PICKUP_DATETIME",          Table.VARCHAR),
+                                 new Table("PICKUP_LONGITUDE",         Table.VARCHAR),
+                                 new Table("TIP_AMOUNT",               Table.VARCHAR),
+                                 new Table("UUID",                     Table.VARCHAR),
+                                 new Table("TRIP_TYPE",                Table.VARCHAR),
+                                 new Table("RATE_CODE",                Table.VARCHAR),
+                                 new Table("TOLLS_AMOUNT",             Table.VARCHAR),
+                                 new Table("DROPOFF_LATITUDE",         Table.VARCHAR),
+                                 new Table("DROPOFF_LONGITUDE",        Table.VARCHAR),
+                                 new Table("TIME_BETWEEN_SERVICE",     Table.VARCHAR),
+                                 new Table("PASSENGER_COUNT",          Table.VARCHAR),
+                                 new Table("DISTANCE_BETWEEN_SERVICE", Table.VARCHAR),
+                                 new Table("TOTAL_AMOUNT",             Table.VARCHAR),
+                           };
+    Set<Table> setFields = new HashSet<Table>();
+    setFields.addAll(Arrays.asList(arrayFields));   
+    return setFields;
   }
 }
