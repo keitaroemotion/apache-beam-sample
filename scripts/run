@@ -1,6 +1,6 @@
-rm -rf counts
-rm -rf counts-*
-mkdir -p counts
+OUTPUT="target/json"
+rm -rf $OUTPUT
+mkdir -p $OUTPUT
 
 INPUT=$1
 if [ -z "$INPUT" ]
@@ -9,6 +9,6 @@ then
 fi
 
 mvn compile exec:java -Dexec.mainClass=org.apache.beam.examples.JsonToCsv \
-     -Dexec.args="--inputFile=$INPUT --output=counts/counts" -Pdirect-runner
+     -Dexec.args="--inputFile=$INPUT --output=$OUTPUT/json" -Pdirect-runner
 
-cat counts/*
+cat $OUTPUT/*
