@@ -31,7 +31,7 @@ public class JsonToCsv {
     @ProcessElement
     public void processElement(@Element String element, OutputReceiver<String> receiver) {
       JSONObject json           = new JSONObject(element);
-      Set<Table> fields         = getTableFields();
+      Field[] fields            = getFields();
       Collection<Object> values = json.toMap().values(); 
 
       receiver.output(buildCsvLine(fields, values));
@@ -76,22 +76,29 @@ public class JsonToCsv {
     runJsonToCsv(options);
   }
 
-  private static String buildCsvLine(Set<Table> fields, Collection<Object> values){
+  private static String buildCsvLine(Field[] fields, Collection<Object> values){
     String fieldString = "";
     String valueString = "";
 
-    for (Table field : fields) {
+    for (Field field : fields) {
       fieldString += field.fieldName + ",";
     }
-
+ 
+    int i = 0;
     for (Object value : values) {
-      valueString += value.toString() + ",";
+      String _value = value.toString();
+
+      if (fields[i].type == Field.VARCHAR){
+        _value = String.format("'%s'", _value);
+      }
+
+      valueString += _value + ",";
     }
 
     return fieldString + valueString;
   }
 
-  private static class Table{
+  private static class Field{
     public static final int VARCHAR  = 0;
     public static final int DATETIME = 1;
     public static final int NUMBER   = 2;
@@ -99,35 +106,32 @@ public class JsonToCsv {
     public String  fieldName;
     public int type;
 
-    private Table(String _fieldName, int _type){
+    private Field(String _fieldName, int _type){
       fieldName = _fieldName;
       type      = _type;
     }
   }
 
-  private static Set<Table> getTableFields(){
-    Table[] arrayFields = new Table[]{
-                                 new Table("PAYMENT_TYPE",             Table.VARCHAR),     
-                                 new Table("STORE_AND_FWD_FLAG",       Table.VARCHAR),     
-                                 new Table("FARE_AMOUNT",              Table.VARCHAR),
-                                 new Table("PICKUP_LATITUDE",          Table.VARCHAR),
-                                 new Table("DROPOFF_DATETIME",         Table.VARCHAR),
-                                 new Table("PICKUP_DATETIME",          Table.VARCHAR),
-                                 new Table("PICKUP_LONGITUDE",         Table.VARCHAR),
-                                 new Table("TIP_AMOUNT",               Table.VARCHAR),
-                                 new Table("UUID",                     Table.VARCHAR),
-                                 new Table("TRIP_TYPE",                Table.VARCHAR),
-                                 new Table("RATE_CODE",                Table.VARCHAR),
-                                 new Table("TOLLS_AMOUNT",             Table.VARCHAR),
-                                 new Table("DROPOFF_LATITUDE",         Table.VARCHAR),
-                                 new Table("DROPOFF_LONGITUDE",        Table.VARCHAR),
-                                 new Table("TIME_BETWEEN_SERVICE",     Table.VARCHAR),
-                                 new Table("PASSENGER_COUNT",          Table.VARCHAR),
-                                 new Table("DISTANCE_BETWEEN_SERVICE", Table.VARCHAR),
-                                 new Table("TOTAL_AMOUNT",             Table.VARCHAR),
-                           };
-    Set<Table> setFields = new HashSet<Table>();
-    setFields.addAll(Arrays.asList(arrayFields));   
-    return setFields;
+  private static Field[] getFields(){
+    return new Field[]{
+             new Field("PAYMENT_TYPE",             Field.VARCHAR),     
+             new Field("STORE_AND_FWD_FLAG",       Field.VARCHAR),     
+             new Field("FARE_AMOUNT",              Field.VARCHAR),
+             new Field("PICKUP_LATITUDE",          Field.VARCHAR),
+             new Field("DROPOFF_DATETIME",         Field.VARCHAR),
+             new Field("PICKUP_DATETIME",          Field.VARCHAR),
+             new Field("PICKUP_LONGITUDE",         Field.VARCHAR),
+             new Field("TIP_AMOUNT",               Field.VARCHAR),
+             new Field("UUID",                     Field.VARCHAR),
+             new Field("TRIP_TYPE",                Field.VARCHAR),
+             new Field("RATE_CODE",                Field.VARCHAR),
+             new Field("TOLLS_AMOUNT",             Field.VARCHAR),
+             new Field("DROPOFF_LATITUDE",         Field.VARCHAR),
+             new Field("DROPOFF_LONGITUDE",        Field.VARCHAR),
+             new Field("TIME_BETWEEN_SERVICE",     Field.VARCHAR),
+             new Field("PASSENGER_COUNT",          Field.VARCHAR),
+             new Field("DISTANCE_BETWEEN_SERVICE", Field.VARCHAR),
+             new Field("TOTAL_AMOUNT",             Field.VARCHAR),
+      };
   }
 }
