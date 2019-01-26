@@ -36,11 +36,6 @@ import org.apache.beam.sdk.transforms.Combine;
 
 public class JsonToCsv {
   static class ParseJsonString extends DoFn<String, String> {
-    private final Counter emptyLines       = Metrics.counter(ParseJsonString.class, "emptyLines");
-    private final Distribution lineLenDist = Metrics.distribution(
-                                               ParseJsonString.class,
-                                               "lineLenDistro"
-                                             );
 
     @ProcessElement
     public void processElement(@Element String element, OutputReceiver<String> receiver) {
@@ -67,7 +62,7 @@ public class JsonToCsv {
       extends PTransform<PCollection<String>, PCollection<KV<String, String>>> {
     @Override
     public PCollection<KV<String, String>> expand(PCollection<String> jsonLines) {
-      PCollection<String> values                 = jsonLines.apply(ParDo.of(new ParseJsonString()));
+      PCollection<String> values = jsonLines.apply(ParDo.of(new ParseJsonString()));
       PCollection<KV<String, String>> wordCounts = values.apply(perElement());
 
       return wordCounts;
@@ -97,6 +92,7 @@ public class JsonToCsv {
           .apply(perKey());
     }
   }
+ 
 
   private static class CountFn<T> extends CombineFn<T, String[], String> {
     @Override
@@ -106,18 +102,29 @@ public class JsonToCsv {
 
     @Override
     public String[] addInput(String[] accumulator, T input) {
-      // accumulator[0] += "";
-      // return accumulator;
-      return new String[] {""};
+      if(input != null){
+        accumulator[0] += input;
+      }
+      return accumulator;
     }
 
     @Override
     public String extractOutput(String[] accumulator) {
-      return "accumulator[0]";
+      return accumulator[0];
     }
+
     @Override
     public String[] mergeAccumulators(Iterable<String[]> accumulators) {
-      return new String[]{""};
+      Iterator<String[]> iter = accumulators.iterator();
+      if (!iter.hasNext()) {
+        return createAccumulator();
+      }
+      String[] running = iter.next();
+
+      while (iter.hasNext()) {
+        running[0] += iter.next()[0];
+      }
+      return running;
     }
   }
 
