@@ -77,26 +77,30 @@ public class JsonToCsv {
   }
 
   private static String buildCsvLine(Field[] fields, Collection<Object> values){
-    String fieldString = "";
-    String valueString = "";
+    try {
+      String fieldString = "";
+      String valueString = "";
 
-    for (Field field : fields) {
-      fieldString += field.fieldName + ",";
-    }
+      for (Field field : fields) {
+        fieldString += field.fieldName + ",";
+      }
  
-    int i = 0;
-    for (Object value : values) {
-      String _value = value.toString();
+      int i = 0;
+      for (Object value : values) {
+        String _value = value.toString();
 
-      if (fields[i].type == Field.VARCHAR || fields[i].type == Field.DATETIME){
-        _value = String.format("'%s'", _value);
+        if (fields[i].type == Field.VARCHAR || fields[i].type == Field.DATETIME){
+          _value = String.format("'%s'", _value);
+        }
+
+        valueString += _value + ",";
+        i++;
       }
 
-      valueString += _value + ",";
-      i++;
+      return fieldString + valueString;
+    }catch(Exception e){
+      return "";
     }
-
-    return fieldString + valueString;
   }
 
   private static class Field{

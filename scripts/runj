@@ -1,0 +1,14 @@
+OUTPUT="target/json"
+rm -rf $OUTPUT
+mkdir -p $OUTPUT
+
+INPUT=$1
+if [ -z "$INPUT" ]
+then
+   INPUT="src/test/json/tiny.json"
+fi
+
+mvn compile exec:java -Dexec.mainClass=org.apache.beam.examples.WordCount \
+     -Dexec.args="--inputFile=$INPUT --output=$OUTPUT/json" -Pdirect-runner
+
+cat $OUTPUT/*
